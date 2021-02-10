@@ -15,7 +15,7 @@ def cge_session():
     p = sync_playwright().start()
 
     browser_type = p.chromium
-    browser = browser_type.launch(headless=False)
+    browser = browser_type.launch(headless=True)
 #Setup directory to store videos of runs
     page = browser.new_page(record_video_dir="videos/")
     testenv = "https:\\cgepreview.concursolutions.com"
