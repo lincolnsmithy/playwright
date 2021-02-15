@@ -9,10 +9,10 @@ testenv = "https:\\cgepreview.concursolutions.com"
 #@pytest.fixture()
 
 def log_request(intercepted_request):
-    print("a request was made:", intercepted_request.url)
+    print("Request:", intercepted_request.url)
 
 def log_failed_request(intercepted_request):
-    print("FAILED REQUEST: ",intercepted_request.url)
+    print("FAILED Request: ",intercepted_request.url)
 
 def test_cge_session(page):
     page.set_default_timeout(125000) #Set to handle gateway time out
@@ -41,4 +41,3 @@ def test_cge_session(page):
 #Logout
     page.click("data-test=menu-profile")
     page.click("data-test=user-profile-menu-signout-link")
- 
