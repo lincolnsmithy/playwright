@@ -1,6 +1,7 @@
 from slugify import slugify
 from pathlib import Path
 import pytest
+from datetime import datetime
 
 def pytest_runtest_makereport(item, call) -> None:
     #print("INREPORT")
@@ -9,6 +10,8 @@ def pytest_runtest_makereport(item, call) -> None:
             page = item.funcargs["page"]
             screenshot_dir = Path(".playwright-screenshots")
             screenshot_dir.mkdir(exist_ok=True)
-            page.screenshot(path=str(screenshot_dir / "tester.png"))
+            errorfile = "error" + datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+
+            page.screenshot(path=str(screenshot_dir / errorfile))
             print("After Screenshot Report")
 

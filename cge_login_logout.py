@@ -30,8 +30,16 @@ def test_cge_session(page):
     page.goto(testenv)
     assert page.wait_for_selector("data-test=app-footer-links"), "TEST RESULT"
     page.wait_for_load_state()
-    un = os.environ['USERNAME']
-    pw = os.environ['PW']
+    try:
+        un = os.environ['USERNAME']
+    except:
+        print("USERNAME Environment Variable to your Test User")
+        print("export USERNAME=testusername")
+    try:
+        pw = os.environ['PW']
+    except:
+        print("USERNAME Environment Variable to your Test User")
+        print("export USERNAME=testusername")
     #print(un)
 
     page.type("id=userid", un)
@@ -42,7 +50,7 @@ def test_cge_session(page):
     print(page.context.cookies())
 
     print("logout")
-    page.set_default_timeout(10000) #Set to handle gateway time out
+    page.set_default_timeout(30000) #Set to handle gateway time out
 
     page.click("data-test=menu-profile")
     page.click("data-test=user-profile-menu-signout-link")
