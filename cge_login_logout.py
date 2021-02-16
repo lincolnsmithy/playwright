@@ -4,9 +4,6 @@ import os
 import pytest
 
 testenv = "https:\\cgepreview.concursolutions.com"
-#testenv = os.environ['ENV']
-#@pytest.fixture(scope='module')
-#@pytest.fixture()
 
 def log_request(intercepted_request):
     print("Request:", intercepted_request.url)

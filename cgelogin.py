@@ -4,8 +4,8 @@
 #Based on Python/Playwright framework with py-test
 
 from playwright.sync_api import sync_playwright
-import os
 import pytest
+import os
 #Using Preview for now
 testenv = "https:\\cgepreview.concursolutions.com"
 
@@ -13,16 +13,16 @@ testenv = "https:\\cgepreview.concursolutions.com"
 @pytest.fixture(scope='module')
 def cge_session():
     p = sync_playwright().start()
-
     browser_type = p.chromium
     browser = browser_type.launch(headless=True)
-#Setup directory to store videos of runs
-    page = browser.new_page(record_video_dir="videos/")
-    testenv = "https:\\cgepreview.concursolutions.com"
 
-    #Goto Preview -  and login
+
+#Setup directory to store videos of runs
+    #page = browser.new_page(record_video_dir="videos/")
+    page = browser.new_page()
+    testenv = "https:\\cgepreview.concursolutions.com"
     page.goto(testenv)
-    assert page.wait_for_selector("data-test=app-footer-links"), "TEST RESULT"
+    #assert page.wait_for_selector("data-test=app-footer-links"), "TEST RESULT"
     page.wait_for_load_state()
     un = os.environ['USERNAME']
     pw = os.environ['PW']
@@ -41,7 +41,7 @@ def cge_session():
     p.stop()
 
 def test_travel_screen(cge_session):
-    print("Test Travel Screen Shows Up")
+    #print("Test Travel Screen Shows Up")
     cge_session.goto(testenv + "/travelhome.asp")
     assert cge_session.wait_for_selector("id=TMAIR_searchRefPoint0")
 
@@ -75,28 +75,27 @@ def _test_travel_perdiem_location(cge_session):
     #cge_session.keyboard.press('Tab')
 
     cge_session.click("[id=btnAirLaunchWizard]")
-
-    cge_session.screenshot(path=f'exampleTravel.png')
+    #cge_session.screenshot(path=f'exampleTravel.png')
 
 def test_auth_screen(cge_session):
     cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Authorization&MenuItem=View")
     assert cge_session.wait_for_selector("data-test=menu__anchor-travelmanagerauthorization_0")
     cge_session.frames[2].wait_for_load_state('networkidle',timeout=30000)
-    cge_session.screenshot(path=f'exampleauth.png')
+    #cge_session.screenshot(path=f'exampleauth.png')
 
 def test_voucher_screen(cge_session):
     cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Voucher&MenuItem=View")
     assert cge_session.wait_for_selector("data-test=menu__anchor-travelmanagervoucher_0")
     cge_session.frames[2].wait_for_load_state('networkidle')
-    cge_session.screenshot(path=f'examplevoucher.png')
+    #cge_session.screenshot(path=f'examplevoucher.png')
 
 def test_approval_screen(cge_session):
     cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Approval&MenuItem=All")
     assert cge_session.wait_for_selector("data-test=menu__anchor-travelmanagervoucher")
-    cge_session.frames[2].wait_for_load_state('networkidle')
-    cge_session.screenshot(path=f'exampleapprovals.png')
+    cge_session.frames[2].wait_for_load_state('networkidle',timeout=10000)
+    #cge_session.screenshot(path=f'exampleapprovals.png')
 
 def test_new_auth_screen(cge_session):
     cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Authorization&MenuItem=New")
     cge_session.frames[2].wait_for_load_state('networkidle')
-    cge_session.screenshot(path=f'newauth.png')
+    #cge_session.screenshot(path=f'newauth.png')
