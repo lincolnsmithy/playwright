@@ -17,7 +17,7 @@ def log_console(msg):
 def cge_session():
     p = sync_playwright().start()
     browser_type = p.chromium
-    browser = browser_type.launch(headless=False,slow_mo=1000)
+    browser = browser_type.launch(headless=True,slow_mo=1000)
 
 #Setup directory to store videos of runs
     #page = browser.new_page(record_video_dir="videos/")
