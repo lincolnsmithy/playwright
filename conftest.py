@@ -7,9 +7,6 @@ def pytest_runtest_makereport(item, call):
 #Reporting
     ss = False
     if call.when == "call":
-        for items in item.funcargs:
-            print(items)
-        #print(dir(item.funcargs['cge_session']))
         #If error (excinfo and page is in item then get screen shot of page
         #Screen shot is taken of failed page with test name and datetime stamp
         if call.excinfo is not None and ("cge_session" or "page" in item.funcargs):
