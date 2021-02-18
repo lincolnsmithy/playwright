@@ -3,9 +3,12 @@ import pytest
 from datetime import datetime
 import os
 
+def pytest_html_report_title(report):
+    report.title = os.environ['PYTEST_BASE_URL'] + ": Post Deploy Test"
+
 def pytest_runtest_makereport(item, call):
 #Reporting
-    ss = False
+    ss = True #need to command line this option for pass/fail/all
     if call.when == "call":
         #If error (excinfo and page is in item then get screen shot of page
         #Screen shot is taken of failed page with test name and datetime stamp
