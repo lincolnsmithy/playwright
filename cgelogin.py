@@ -24,8 +24,7 @@ def cge_session():
     #Setup directory to store videos of runs - another argument needs to be implemented to support
     #
     page = browser.new_page(record_video_dir="videos/")
-
-    page = browser.new_page()
+    #page = browser.new_page()
     #print("PAGEURL: " + page.url)
     page.on('console', log_console) #send page console messages to log_console
 
@@ -96,7 +95,7 @@ def test_approval_screen(cge_session):
     cge_session.wait_for_load_state('networkidle',timeout=30000)
     #assert cge_session.wait_for_selector("data-test=menu__anchor-travelmanagervoucher")
     assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")
-    
+
 def test_new_auth_screen(cge_session):
     cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Authorization&MenuItem=New")
     cge_session.wait_for_load_state('networkidle')
