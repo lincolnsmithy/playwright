@@ -14,20 +14,34 @@ testenv = os.environ['PYTEST_BASE_URL'] #Global Test BASE URL - note:pytest_base
 def log_console(msg):
     print("in console: " + msg.type + " " +msg.text)
 
+def log_request(requestfinished):
+    print("IN LOG REQUEST")
+    headers = requestfinished.headers
+    print(headers)
+
 #Login Fixture - gets login/session for rest of the tests
 @pytest.fixture(scope='module')
+#@pytest.fixture(scope='session')
+
 def cge_session():
+    """Create Concur Login Session for use with additional tests
+
+    Sets up Playwright browser and new_page for use with additional tests"""
+
     p = sync_playwright().start()
-    browser_type = p.firefox
+    browser_type = p.chromium
     browser = browser_type.launch(headless=False,slow_mo=500)
 
     #Setup directory to store videos of runs - another argument needs to be implemented to support
     #
-    page = browser.new_page(record_video_dir="videos/")
+    #page = browser.new_page(record_video_dir="videos/")
+    page = browser.new_page()
+    page.context.set_extra_http_headers({"x-abmb-concur":"b132d9a0cfc7f5784706f46d8a4f41aaa4d460c5"})
+
     #page = browser.new_page()
     #print("PAGEURL: " + page.url)
-    page.on('console', log_console) #send page console messages to log_console
-
+    #page.on('console', log_console) #send page console messages to log_console
+    #page.on('requestfinished', log_request)
     page.goto(testenv) #testenv set globally above
     #assert page.wait_for_selector("data-test=app-footer-links"), "TEST RESULT"
     page.wait_for_load_state()
@@ -50,11 +64,16 @@ def cge_session():
     p.stop()
 
 def test_travel_screen(cge_session):
+    """Simple Travel Screen Rendered Test
+
+    Goto /travel.asp
+    Asserts: id=id=TMAIR_searchRefPoint0 is found on page"""
     #print("Test Travel Screen Shows Up")
     cge_session.goto(testenv + "/travelhome.asp")
     assert cge_session.wait_for_selector("id=TMAIR_searchRefPoint0")
 
-def test_travel_perdiem_location(cge_session):
+
+def _test_travel_perdiem_location(cge_session):
     cge_session.goto(testenv + "/travelhome.asp")
     assert cge_session.wait_for_selector("id=TMAIR_searchRefPoint0")
     #Choose PerDiem Location
@@ -65,7 +84,7 @@ def test_travel_perdiem_location(cge_session):
     cge_session.keyboard.press("Tab")
     #cge_session.click("[id=fltDepCityDisplay0_airAC0]",timeout=5000)
     #cge_session.dblclick("[id=fltDepCityDisplay0]")
-    print(cge_session.get_attribute("[id=fltDepCityDisplay0]", name="text"))
+    #print(cge_session.get_attribute("[id=fltDepCityDisplay0]", name="text"))
 
     #Date Picker:)
     cge_session.fill("[id=fltDate0]", "02/27/2021")
@@ -85,7 +104,6 @@ def test_auth_screen(cge_session):
     assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")
 
 def test_voucher_screen(cge_session):
-    print(testenv)
     cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Voucher&MenuItem=View")
     cge_session.wait_for_load_state()
     assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")

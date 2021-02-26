@@ -24,6 +24,7 @@ def cge_session():
     # Setup directory to store videos of runs
     # page = browser.new_page(record_video_dir="videos/")
     page = browser.new_page()
+
     yield page
 
     page.close()
@@ -32,9 +33,9 @@ def cge_session():
 
 def test_cge_login(cge_session):
     cge_session.set_default_timeout(125000) #Set to handle gateway time out
-    cge_session.on("request", log_request)
-    cge_session.on("failedrequest", log_failed_request)
-    cge_session.on('console', log_console)
+    #cge_session.on("request", log_request)
+    #cge_session.on("failedrequest", log_failed_request)
+    #cge_session.on('console', log_console)
 
     cge_session.goto(testenv)
 

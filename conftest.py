@@ -25,7 +25,7 @@ def pytest_runtest_makereport(item, call):
             if ss:
                 screenshot_dir = Path(".playwright-screenshots")
                 screenshot_dir.mkdir(exist_ok=True)
-                errorfile = testname + "-error" + datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".png"
+                errorfile = "FAIL: " + testname + "-" + datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".png"
                 page.screenshot(path=str(screenshot_dir / errorfile))
         else:
             try:
@@ -41,5 +41,5 @@ def pytest_runtest_makereport(item, call):
                 screenshot_dir = Path(".playwright-screenshots")
                 screenshot_dir.mkdir(exist_ok=True)
 
-                errorfile = testname + "-PASS" + datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".png"
+                errorfile = "PASS: "+ testname + "-" + datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".png"
                 page.screenshot(path=str(screenshot_dir / errorfile))
