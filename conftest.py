@@ -9,6 +9,7 @@ def pytest_html_report_title(report):
 def pytest_runtest_makereport(item, call):
 #Reporting
     ss = True #need to command line this option for pass/fail/all
+    sspass = True
     if call.when == "call":
         #If error (excinfo and page is in item then get screen shot of page
         #Screen shot is taken of failed page with test name and datetime stamp
@@ -37,7 +38,7 @@ def pytest_runtest_makereport(item, call):
                 pass
             page = item.funcargs['cge_session']
 
-            if ss:
+            if sspass:
                 screenshot_dir = Path(".playwright-screenshots")
                 screenshot_dir.mkdir(exist_ok=True)
 

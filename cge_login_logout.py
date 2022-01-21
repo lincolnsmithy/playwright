@@ -4,7 +4,7 @@ import os
 import pytest
 from pytest_html import extras
 
-testenv = "https:\\cgepreview.concursolutions.com"
+#testenv = "https:\\msprqa8.concurtech.net"
 
 def log_request(intercepted_request):
     print("Request:", intercepted_request.url)
@@ -36,6 +36,11 @@ def test_cge_login(cge_session):
     #cge_session.on("request", log_request)
     #cge_session.on("failedrequest", log_failed_request)
     #cge_session.on('console', log_console)
+    try:
+        testenv = os.environ['PYTEST_BASE_URL']
+    except:
+        print("PYTEST_BASE_URL environment variable not set")
+        print("export PYTEST_BASE_URL=testurl")
 
     cge_session.goto(testenv)
 
@@ -48,7 +53,7 @@ def test_cge_login(cge_session):
         print("export USERNAME=testusername")
     try:
         pw = os.environ['PW']
-    except:
+    except: 
         print("PW environment variable not set")
         print("export PW=testpassword")
 
@@ -57,7 +62,7 @@ def test_cge_login(cge_session):
     cge_session.click("id=btnSubmit")
 
     #print("logout")
-    cge_session.set_default_timeout(30000)  # set back to 30 seconds
+    cge_session.set_default_timeout(125000)
     # Logout
     cge_session.click("data-test=menu-profile")
     cge_session.click("data-test=user-profile-menu-signout-link")
