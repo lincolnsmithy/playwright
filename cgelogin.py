@@ -53,7 +53,10 @@ def cge_session():
 
     p = sync_playwright().start()
     browser_type = p.chromium
-    browser = browser_type.launch(headless=False)
+    #browser_type = p.firefox
+    #browser_type = p.webkit
+
+    browser = browser_type.launch(headless=False,devtools=True)
    # browser.start_tracing(path='/Users/i857921/trace.json')
     #
     #browser = browser.new_context(record_har_path='/Users/i857921/har')
@@ -66,7 +69,7 @@ def cge_session():
     #page.on('console', log_console) #send page console messages to log_console
     #page.on('requestfinished', log_request)
     #page.on('response', log_response)
-    page.on("response", lambda response: print("<<", response.status, response.url, response.all_headers().get("date")))
+    #page.on("response", lambda response: print("<<", response.status, response.url, response.all_headers().get("date")))
     page.on("requestfailed ", lambda request: print(request.url + ":" + request.failure))
 
     if testenv == "https://integration.concursolutions.com":
@@ -97,15 +100,19 @@ def cge_session():
     yield page
 
    #Get TAVSSESSIONID
-    print(get_tavs_sessionid(page))
-    page.click('text=Profile')
-    page.click('text=Sign Out')
-    #page.click("data-test=user-profile-menu-signout-link")
-    assert page.wait_for_selector("id=btnSubmit")  # check logout worked
-    #browser.stop_tracing()
-    #browser.close()
-    page.close()
-    p.stop()
+    try:
+        print(get_tavs_sessionid(page))
+        page.click('text=Profile')
+        page.click('text=Sign Out')
+        #page.click("data-test=user-profile-menu-signout-link")
+        assert page.wait_for_selector("id=btnSubmit")  # check logout worked
+        #browser.stop_tracing()
+        #browser.close()
+        page.close()
+        p.stop()
+    except:
+        page.close()
+        p.stop()
 
 def test_travel_screen(cge_session):
     """Simple Travel Screen Rendered Test
@@ -149,9 +156,9 @@ def test_auth_screen(cge_session):
 
     cge_session.click("data-test=menu__anchor-travelmanagerauthorization")
     #cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Authorization&MenuItem=View")
-    cge_session.wait_for_load_state('networkidle',timeout=121000)
+    #cge_session.wait_for_load_state('networkidle',timeout=121000)
     #assert cge_session.wait_for_selector("data-test=menu__anchor-travelmanagerauthorization_0")
-    assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")
+    #assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")
 
 def test_voucher_screen(cge_session):
     cge_session.click("data-test=menu__anchor-travelmanagervoucher")
@@ -164,12 +171,19 @@ def test_approval_screen(cge_session):
     #cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Approval&MenuItem=All")
 
     try:
-        cge_session.click("data-test=menu__anchor-travelmanagerapproval")
 
-        cge_session.wait_for_load_state('domcontentloaded')
+        print(cge_session.main_frame.child_frames)
+        cge_session.click("data-test=menu__anchor-travelmanagerapproval")
+        print(cge_session.main_frame.child_frames)
+
+
+        cge_session.wait_for_load_state('domcontentloaded', timeout=120000)
+        print("Dom Content Loaded")
+        assert cge_session.wait_for_selector('//*[@id="approvals-list-cards"]/div')
         cge_session.wait_for_load_state('networkidle',timeout=120000)
+        print("Network Idle Reached")
         #assert cge_session.wait_for_selector("data-test=menu__anchor-travelmanagervoucher")
-        assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")
+        #assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")
 
     except:
         print("BYPASS approval wait")
