@@ -56,11 +56,11 @@ def cge_session():
     #browser_type = p.firefox
     #browser_type = p.webkit
 
-    browser = browser_type.launch(headless=False,devtools=True)
-   # browser.start_tracing(path='/Users/i857921/trace.json')
+    browser = browser_type.launch(headless=True,devtools=True)
+    # browser.start_tracing(path='/Users/i857921/trace.json')
     #
     #browser = browser.new_context(record_har_path='/Users/i857921/har')
-    page = browser.new_page(record_har_path='/Users/i857921/har/test.har')
+    page = browser.new_page(record_har_path='/Users/johnraymond/har/test.har')
 
 # Turn on hooks for response, console and request
 # Set Headers x-abmb-concur so that test traffic is not flagged.
@@ -96,6 +96,8 @@ def cge_session():
         page.fill("id=password", pw)
         page.click("id=btnSubmit")
 
+        #page.set_extra_http_headers({"TAVSSESSION": ""})
+
 #Yield connection to rest of tests / includes session info
     yield page
 
@@ -124,6 +126,7 @@ def test_travel_screen(cge_session):
     cge_session.click("data-test=menu__anchor-travel")
     #cge_session.goto(testenv + "/travelhome.asp")
     assert cge_session.wait_for_selector("id=TMAIR_searchRefPoint0")
+    cge_session.wait_for_load_state('networkidle',timeout=121000)
 
 
 def test_travel_perdiem_location(cge_session):
@@ -167,24 +170,35 @@ def test_voucher_screen(cge_session):
     cge_session.wait_for_load_state('networkidle',timeout=121000)
     assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")
 
+def test_voucher_search(cge_session):
+    cge_session.click("data-test=menu__anchor-travelmanagervoucher")
+    cge_session.wait_for_load_state('networkidle', timeout=121000)
+    cge_session.click("data-test=menu__anchor-travelmanagervoucher_2")
+    cge_session.wait_for_load_state('networkidle', timeout=121000)
+
 def test_approval_screen(cge_session):
     #cge_session.goto(testenv + "/TravelManagerFrame.asp?MenuClicked=Approval&MenuItem=All")
 
     try:
-
-        print(cge_session.main_frame.child_frames)
+        print(get_tavs_sessionid(cge_session))
         cge_session.click("data-test=menu__anchor-travelmanagerapproval")
-        print(cge_session.main_frame.child_frames)
-
+        #print(cge_session.context.cookies())
 
         cge_session.wait_for_load_state('domcontentloaded', timeout=120000)
         print("Dom Content Loaded")
-        assert cge_session.wait_for_selector('//*[@id="approvals-list-cards"]/div')
+        #print(cge_session.main_frame.content())
+        #print("-----------------------------")
+        cge_session.main_frame.wait_for_load_state()
+        #dump_frame_tree(cge_session.main_frame, "")
+
+        #assert cge_session.wait_for_selector('//*[@id="approvals-list-cards"]/div')
         cge_session.wait_for_load_state('networkidle',timeout=120000)
         print("Network Idle Reached")
         #assert cge_session.wait_for_selector("data-test=menu__anchor-travelmanagervoucher")
         #assert cge_session.frames[2].wait_for_selector("id=DocumentFrame")
 
+        test_travel_screen(cge_session)
+        test_voucher_search(cge_session)
     except:
         print("BYPASS approval wait")
 
@@ -202,4 +216,14 @@ def test_new_auth_screen(cge_session):
 #    cge_session.wait_for_load_state('networkidle', timeout=121000)
 #    cge_session.wait_for_load_state('networkidle')
 
+def test_frame(cge_session):
+    #print(cge_session.main_frame.content())
+    print("-----------------------------")
+    dump_frame_tree(cge_session.main_frame,"")
+
+def dump_frame_tree(frame, indent):
+    print(indent + frame.name + '@' + frame.url)
+    #print(frame.content())
+    for child in frame.child_frames:
+        dump_frame_tree(child, indent + "    ")
 
