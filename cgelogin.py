@@ -58,7 +58,7 @@ def cge_session():
 
     browser = browser_type.launch(headless=True,devtools=True)
     # browser.start_tracing(path='/Users/i857921/trace.json')
-    #
+
     #browser = browser.new_context(record_har_path='/Users/i857921/har')
     page = browser.new_page(record_har_path='/Users/johnraymond/har/test.har')
 
